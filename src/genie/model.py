@@ -14,35 +14,33 @@ from .constrained_gen import BartConstrainedGen
 
 logger = logging.getLogger(__name__)
 
+
 class GenIEModel(pl.LightningModule):
     def __init__(self, args):
-        super().__init__() 
-        self.hparams = args 
-    
+        super().__init__()
 
-        self.config=BartConfig.from_pretrained('facebook/bart-large')
-        self.tokenizer = BartTokenizer.from_pretrained('facebook/bart-large')
-        self.tokenizer.add_tokens([' <arg>',' <tgr>'])
+        print(vars(args))
+        self.hparams.update(vars(args))
 
-        
-        if self.hparams.model=='gen':
+        self.config = BartConfig.from_pretrained("facebook/bart-large")
+        self.tokenizer = BartTokenizer.from_pretrained("facebook/bart-large")
+        self.tokenizer.add_tokens([" <arg>", " <tgr>"])
+
+        if self.hparams["model"] == "gen":
             self.model = BartGen(self.config, self.tokenizer)
-            self.model.resize_token_embeddings() 
-        elif self.hparams.model == 'constrained-gen':
+            self.model.resize_token_embeddings()
+        elif self.hparams["model"] == "constrained-gen":
             self.model = BartConstrainedGen(self.config, self.tokenizer)
-            self.model.resize_token_embeddings() 
+            self.model.resize_token_embeddings()
         else:
             raise NotImplementedError
 
-
-
     def forward(self, inputs):
-    
+
         return self.model(**inputs)
 
-
     def training_step(self, batch, batch_idx):
-        '''
+        """
         processed_ex = {
                             'doc_key': ex['doc_key'],
                             'input_tokens_ids':input_tokens['input_ids'],
