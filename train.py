@@ -177,9 +177,7 @@ def main():
     checkpoint_callback = ModelCheckpoint(
         dirpath=args.ckpt_dir,
         monitor="val_loss",
-        mode="min",
-        save_weights_only=True,
-        filename="{epoch}",  # this cannot contain slashes
+        filename="gen-arg-{epoch:02d}-{val_loss:.2f}",  # this cannot contain slashes
     )
 
     lr_logger = LearningRateMonitor(logging_interval="step")
@@ -207,6 +205,7 @@ def main():
         val_check_interval=0.5,  # use float to check every n epochs
         precision=16 if args.fp16 else 32,
         callbacks=[checkpoint_callback, lr_logger],
+        default_root_dir="model_checkpoints/",
     )
 
     if args.load_ckpt:

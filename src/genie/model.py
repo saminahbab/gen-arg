@@ -77,6 +77,9 @@ class GenIEModel(pl.LightningModule):
         loss = outputs[0]
         loss = torch.mean(loss)
 
+        # do this to trigger checkpoints?
+        self.log("val_loss", loss)
+
         return loss
 
     def validation_end(self, outputs):
